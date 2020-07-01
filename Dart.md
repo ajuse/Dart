@@ -51,6 +51,10 @@
 
 4. list
 
+   常用方法：
+
+   fold
+
 5. sets
 
 6. maps
@@ -58,6 +62,10 @@
    var m = {};
 
    var m = Map();
+
+   在未指定Map元素类型的情况下为`Map<dynamic, dynamic>`，指定类型的Map只能添加指定类型的数据
+
+   
 
 7. runes（用于在字符串中表示Unicode字符）
 
@@ -95,27 +103,27 @@ Dart 提供了 [Exception](https://api.dart.dev/stable/dart-core/Exception-class
 
 ### 运算符
 
-/  : 可以作浮点数为结果
+`/`  : 可以作浮点数为结果
 
-~/ : 除并取整
+`~/` : 除并取整
 
-as : 类型转换
+`as` : 类型转换
 
-is : 判断指定类型
+`is` : 判断指定类型
 
-is!: 判断指定类型
+`is!`: 判断指定类型
 
-
+`??=`: 避空运算符，仅当变量为空时才为其赋值
 
 #### 条件表达式
 
-cond ? expr1 : expr2  如果cond为true则执行expr1，false则执行expr2
+`cond ? expr1 : expr2`  如果cond为true则执行expr1，false则执行expr2
 
-expr1 ?? expr2        如果expr1为非null则返回其值，否者执行expr2并返回其值
+`expr1 ?? expr2`        如果expr1为非null则返回其值，否者执行expr2并返回其值
 
 #### 级联运算符
 
-..可以在同一个对象上连续调用多个对象的变量或方法
+`..`可以在同一个对象上连续调用多个对象的变量或方法
 
 ### 函数
 
@@ -125,9 +133,9 @@ expr1 ?? expr2        如果expr1为非null则返回其值，否者执行expr2�
 
 #### 可选参数
 
-命名参数：T func({arg1, arg2, ...}){}
+命名参数：`T func({arg1, arg2, ...}){}`
 
-位置参数：T func([arg1, arg2, ...]){}
+位置参数：`T func([arg1, arg2, ...]){}`
 
 #### 默认参数
 
@@ -135,9 +143,9 @@ expr1 ?? expr2        如果expr1为非null则返回其值，否者执行expr2�
 
 #### 匿名函数
 
-描述：([[T] arg[, ...]]) {...};
+描述：`([[T] arg[, ...]]) {...};`
 
-比如：var f = (a) {print('\$a');};  使用胖箭头缩写为 var f = (a) => print('\$a');
+比如：`var f = (a) {print('\$a');};`  使用胖箭头缩写为 `var f = (a) => print('\$a');`
 
 #### 闭包
 
@@ -149,11 +157,128 @@ expr1 ?? expr2        如果expr1为非null则返回其值，否者执行expr2�
 
 ### 类
 
-#### 访问类成员
+可以使用Object对象的runtimeType属性在运行时获取一个对象的类型elem.runtimeType
+
+所有未初始化的实例变量初始值均为null
+
+所有实例变量均会隐式的声明一个Getter方法，非final类型实例变量还会隐式声明一个Setter方法
+
+当且仅当命名冲突时使用 `this` 关键字才有意义，否则 Dart 会忽略 `this` 关键字
+
+构造函数不能被继承
+
+
 
 `.`  : 访问成员
 
 `?.` : 可以避免左值为null而导致问题
 
 #### 构造函数
+
+一般来说在构造函数中为实例变量赋值方式是：
+
+```dart
+class T {
+	int x, y;
+	T(m, n) : x = m, y = n {...};
+}
+var t = T(1, 2);
+```
+
+Dart提供了一种简化的语法糖：
+
+```dart
+class T {
+	int x, y;
+	T(this.x, this.y){...}; // this不能省略！
+}
+var t = T(1, 2);
+```
+
+**默认构造函数**
+
+如果你没有声明构造函数，那么 Dart 会自动生成一个无参数的构造函数并且该构造函数会调用其父类的无参数构造方法。
+
+**常量构造函数**
+
+如果类生成的对象都是不会变的，那么可以在生成这些对象时就将其变为编译时常量。
+
+```dart
+Class T {
+    int x, y;
+	const T(this.x, this.y);
+}
+var c = const T(0, 0);
+```
+
+常量上下文场景，可以省略构造函数或字面量前的const关键字
+
+```dart
+// 只需要一个 const 关键字，其它的则会隐式地根据上下文进行关联。
+const pointAndLine = {
+  'point': [T(0, 0)],
+  'line': [T(1, 10), T(-2, 11)],
+};
+```
+
+**命名式构造函数**
+
+```dart
+class T {
+	int x, y;
+	T(this.x, this.y){...}; // this不能省略！
+	T.org() {...} // 命名式构造函数
+}
+var t = T.org();
+```
+
+子类调用父类构造函数
+
+如果父类有默认构造函数（匿名无参构造函数），会在子类构造函数的函数体代码执行前调用，如果子类构造函数有初始化列表，则在初始化列表之后执行，再执行子类构造函数体；子类初始化列表->父类匿名构造函数->子类构造函数。
+
+如果父类有构造函数，那么子类则必须有构造函数，并且在子类每个构造函数中的初始化列表（必须放置在最后）中使用super显式调用父类构造函数
+
+```dart
+class T {
+  int x, y;
+  T(this.x, this.y);
+  T.org();
+}
+
+class Ta extends T {
+  int m, n;
+  Ta(this.m, this.n): super(m, n);
+}
+
+class Tb extends T {
+  int m, n;
+  Ta(this.m, this.n): super.org();
+}
+```
+
+注意：传递给父类构造函数的参数不能使用 `this` 关键字，因为在参数传递的这一步骤，子类构造函数尚未执行，子类的实例对象也就还未初始化，因此所有的实例成员都不能被访问；反过来说，被实例化的变量则可以传递，比如类静态方法。
+
+**重定向构造函数**
+
+有时候类中的构造函数会调用类中其它的构造函数，该重定向构造函数没有函数体，只需在函数签名后使用（:）指定需要重定向到的其它构造函数即可
+
+```dart
+class Point {
+  double x, y;
+  // 该类的主构造函数。
+  Point(this.x, this.y);
+  // 委托实现给主构造函数。
+  Point.alongXAxis(double x) : this(x, 0);
+}
+```
+
+**工厂构造函数**
+
+
+
+#### static与类
+
+
+
+### 异步编程
 
