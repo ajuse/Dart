@@ -30,8 +30,6 @@
 
 #### final和const
 
-
-
 1. 区别
 2. 使用场景
 
@@ -43,6 +41,8 @@
 
 2. strings
 
+   低层实现？
+
 3. boolbeans
 
    true和false
@@ -51,21 +51,25 @@
 
 4. list
 
+   底层实现？
+
    常用方法：
 
    fold
 
 5. sets
 
+   底层实现？
+
 6. maps
+
+   底层实现？
 
    var m = {};
 
    var m = Map();
 
    在未指定Map元素类型的情况下为`Map<dynamic, dynamic>`，指定类型的Map只能添加指定类型的数据
-
-   
 
 7. runes（用于在字符串中表示Unicode字符）
 
@@ -76,6 +80,14 @@
 #### 类型转换
 
 as
+
+#### 枚举类型
+
+```
+enum PLANETET {sun, earta, moon}
+```
+
+
 
 ### 流程控制
 
@@ -152,6 +164,12 @@ Dart 提供了 [Exception](https://api.dart.dev/stable/dart-core/Exception-class
 闭包即一个函数对象，即使函数对象的调用在它原始作用域之外，依然能够访问它词法作用域内的变量
 
 #### const和函数
+
+
+
+### 包
+
+#### 导入包
 
 
 
@@ -274,11 +292,110 @@ class Point {
 
 **工厂构造函数**
 
+使用 `factory` 关键字标识类的构造函数将会令该构造函数变为工厂构造函数，这将意味着使用该构造函数构造类的实例时并非总是会返回新的实例对象。例如，工厂构造函数可能会从缓存中返回一个实例，或者返回一个子类型的实例。how??
+
+工厂构造函数无法访问this。why??
+
+#### 抽象类
+
+使用`abstract`标识类可以让该类成为抽象类，抽象类无法实例化。抽象类常用于声明接口方法，有时也会有具体的方法实现。
+
+如果想让抽象类同时被实例化，可以为其定义工厂构造函数；how and why??
+
+抽象类通常包含抽象方法。
+
+```dart
+abstract class T {
+	void absfunc();
+}
+```
+
+#### 抽象方法
+
+定义一个接口方法而不具体实现，让实现它的类去实现该方法，抽象方法只能存在于抽象类中；
+
+使用`;`代替方法体可以声明一个抽象方法；
+
+```dart
+abstract class T {
+	void absfunc(); // 定义一个抽象方法
+}
+class B extends T {
+  // 实现该抽象方法
+  void absfunc() {
+    ...
+  }
+}
+```
+
+#### 接口
+
+每一个类都隐式的定义了一个接口并实现了该接口，这个接口包含所有这个类的实例成员以及实现的其他接口。如果想要创建一个A类支持B类的API且不想继承B类，则可以实现B类的接口；
+
+使用`implements`来实现一个或多个接口并实现每个接口定义的API
+
+q: 接口的使用场景？
+
+a: 
+
+q: 接口和抽象类的区别？
+
+a: 
 
 
-#### static与类
+
+#### 扩展一个类
+
+使用`extends`关键字来创建一个子类，可以使用`super`关键字引用一个父类；
+
+
+
+#### 重写类成员
+
+子类可以重写父类的实例方法、Getter、Setter。可以使用`@override`来注解表示重写了一个成员；
+
+虽然也可以不写`@override`也可以实现重写，但是写上增加代码可读性
+
+```dart
+class Foods {
+  String lunch(String food) => 'have lunch not with $food';
+}
+
+class subFood extends Foods {
+  @override
+  String lunch(String food) => 'have lunch with $food';
+}
+```
+
+#### 重载运算符
+
+
+
+
+
+#### static
+
+
+
+#### 泛型
+
+
+
+
+
+
+
+#### mixin
+
+
 
 
 
 ### 异步编程
+
+
+
+
+
+### 常用库介绍
 
